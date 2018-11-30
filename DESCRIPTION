@@ -1,0 +1,18 @@
+Package: KFsim
+Version: 0.0.0.9000
+Title: A package for learning about the basics of package development
+Description: Contains some data about my little ponies.
+Authors@R: c(
+    person("Carrie", "Holt", , "carrie.holt@dfo-mpo.gc.ca", role = c("aut", "cre"))
+  )
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+ByteCompile: true
+Roxygen: list(markdown = TRUE) 
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
