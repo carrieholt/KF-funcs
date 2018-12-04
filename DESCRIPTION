@@ -1,4 +1,4 @@
-Package: KF-funcs
+Package: KFfuncs
 Version: 0.0.0.1000
 Title: Kalman filter functions
 Description: Functions required for Kalman filter estimation of time-varying 
