@@ -1,7 +1,8 @@
-Package: KFsim
+Package: KF-funcs
 Version: 0.0.0.9000
-Title: A package for learning about the basics of package development
-Description: Contains some data about my little ponies.
+Title: Kalman filter functions
+Description: Functions required for Kalman filter estimation of time-varying 
+  productivity within Ricker stock-recruitment relationship
 Authors@R: c(
     person("Carrie", "Holt", , "carrie.holt@dfo-mpo.gc.ca", role = c("aut", "cre"))
   )
