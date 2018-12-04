@@ -13,6 +13,40 @@ kf.rw(initial, x, y)
 
 \item{y}{Dependent variable in obs. equation}
 }
+\value{
+Returns a list of:
+\itemize{
+\item x (independent variable in obs. equation)
+\item y (dependent variable in obs. equation)
+\item prior.mean.a (time-series of prior means of intercept, a)
+\item prior.var.a (time-series of prior variances of intercept, a)
+\item y.hat (predicted value of y(t) given y(t-1))
+\item f (time-series of prediction variances)
+\item v (time-series of prediction error)
+\item post.mean.a (time-series of posterior means of intercept, a)
+\item post.var.a (time-series of posterior variances of intercept, a)
+\item filter.y (filtered estimate of y)
+\item neg.log.like (time-series of negative log-likelihoods)
+\item p.star (ratio of the posterior variance in year r, to the prior variance in year t+1 of intercept, a)
+\item smoothe.mean.a (time-series of smoothed posterior means of interecept, a)
+\item smoothe.var.a (time-series of smoothed posterior variances of interecept, a)
+\item smoothe.y (smoothed estimate of y)
+\item cum.neg.log.lik (cumulative negative log-likelihood)
+\item init.mean.a (starting mean for intercept)
+\item init.var.a (starting variance for intercept)
+\item a.bar (mean intercept value, not implemented)
+\item b (slope parameter)
+\item sig.e (standard deviation of observation error)
+\item sig.w (standard deviation of system error)
+\item rho (autocorrelation in intercept estimates, not implemented)
+\item N.tot (number of non-NA years in spawner time-series)
+\item N.cond (Number of years to omit when calculating the concentrated likelihood for the data set.
+See Visser and Molenaar (1988).  Default is zero)
+\item Param (number of parameter estimated in the maximum likelihood)
+\item AICc (Akaike Information Criterion for small sample sizes)
+\item Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
+}
+}
 \description{
 Kalman filter run
 }

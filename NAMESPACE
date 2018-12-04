@@ -2,3 +2,4 @@
 
 export(kalman.rw)
 export(kalman.rw.fit)
+export(kf.rw)

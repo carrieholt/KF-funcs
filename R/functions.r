@@ -215,8 +215,7 @@
 #' @param x Independent variable in obs. equation
 #' @param y Dependent variable in obs. equation
 #'
-#' @return
-#' @export Returns a list of: 
+#' @return Returns a list of: 
 #' * x (independent variable in obs. equation) 
 #' * y (dependent variable in obs. equation)
 #' * prior.mean.a (time-series of prior means of intercept, a)
@@ -246,6 +245,8 @@
 #' * Param (number of parameter estimated in the maximum likelihood)
 #' * AICc (Akaike Information Criterion for small sample sizes)
 #' * Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
+#'
+#' @export 
 #'
 
 "kf.rw" <- function(initial, x, y)
