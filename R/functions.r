@@ -6,18 +6,40 @@
 
 #' Kalman filter random walk
 #'
-#' @param init.mean.a 
-#' @param init.var.a 
-#' @param b 
-#' @param ln.sig.e 
-#' @param ln.sig.w 
-#' @param x 
-#' @param y 
-#' @param Ts 
+#' @param init.mean.a Starting mean for intercept
+#' @param init.var.a Starting variance for intercept
+#' @param b Slope parameter
+#' @param ln.sig.e Natural log of the standard deviation of observation error
+#' @param ln.sig.w Natural log of the standard deviation of system error
+#' @param x Independent variable in obs. equation
+#' @param y Dependent variable in obs. equation
+#' @param Ts Number of years to omit when calculating the concentrated likelihood for the data set. 
+#' See Visser and Molenaar (1988).  Default is zero.
 #'
-#' @return List of x, y, prior.mean.a, prior.var.a, y.hat, f, v, post.mean.a, post.var.a, filter.y, neg.log.like,
-#' p.star, smoothe.mean.a, smoothe.var.a, smoothe.y, cum.neg.log.lik, init.mean.a, init.var.a, a.bar, b, sig.e,
-#' sig.w, rho
+#' @return Returns a list of: 
+#' * x (independent variable in obs. equation) 
+#' * y (dependent variable in obs. equation)
+#' * prior.mean.a (time-series of prior means of intercept, a)
+#' * prior.var.a (time-series of prior variances of intercept, a)
+#' * y.hat (predicted value of y(t) given y(t-1))
+#' * f (time-series of prediction variances)
+#' * v (time-series of prediction error)
+#' * post.mean.a (time-series of posterior means of intercept, a)
+#' * post.var.a (time-series of posterior variances of intercept, a)
+#' * filter.y (filtered estimate of y) 
+#' * neg.log.like (time-series of negative log-likelihoods)
+#' * p.star (ratio of the posterior variance in year r, to the prior variance in year t+1 of intercept, a)
+#' * smoothe.mean.a (time-series of smoothed posterior means of interecept, a)
+#' * smoothe.var.a (time-series of smoothed posterior variances of interecept, a)
+#' * smoothe.y (smoothed estimate of y)
+#' * cum.neg.log.lik (cumulative negative log-likelihood) 
+#' * init.mean.a (starting mean for intercept)
+#' * init.var.a (starting variance for intercept)
+#' * a.bar (mean intercept value, not implemented)
+#' * b (slope parameter)
+#' * sig.e (standard deviation of observation error)
+#' * sig.w (standard deviation of system error)
+#' * rho (autocorrelation in intercept estimates, not implemented)
 #' @export
 #'
 "kalman.rw" <- function(init.mean.a, init.var.a, b, ln.sig.e, ln.sig.w, x, y, Ts = 0)
@@ -164,12 +186,13 @@
 
 #' Cumulative negative log-likelihood
 #'
-#' @param optim.vars 
-#' @param init.mean.a 
-#' @param init.var.a 
-#' @param x 
-#' @param y 
-#' @param Ts 
+#' @param optim.vars Vector of initial values for variables to be estimated (b, ln.sig.e, ln.sig.w)
+#' @param init.mean.a Starting mean for intercept, a
+#' @param init.var.a Starting variance for intercept, a
+#' @param x Independent variable in obs. equation
+#' @param y Dependent variable in obs. equation
+#' @param Ts Number of years to omit when calculating the concentrated likelihood for the data set. 
+#' See Visser and Molenaar (1988).  Default is zero.
 #'
 #' @return Cumulative negative log-likelihood
 #' @export
@@ -188,14 +211,41 @@
 # Uses "kalman.rw" to estimates a linear regression model with time-varying intercept that follows a random walk
 #' Kalman filter run
 #'
-#' @param initial 
-#' @param x 
-#' @param y 
+#' @param initial Vector of initial values for variables to be estimated (b, ln.sig.e, ln.sig.w)
+#' @param x Independent variable in obs. equation
+#' @param y Dependent variable in obs. equation
 #'
 #' @return
-#' @export List of x, y, prior.mean.a, prior.var.a, y.hat, f, v, post.mean.a, post.var.a, filter.y, neg.log.like,
-#' p.star, smoothe.mean.a, smoothe.var.a, smoothe.y, cum.neg.log.lik, init.mean.a, init.var.a, a.bar, b, sig.e,
-#' sig.w, rho, N.tot, N.cond, Param, AICc, Report
+#' @export Returns a list of: 
+#' * x (independent variable in obs. equation) 
+#' * y (dependent variable in obs. equation)
+#' * prior.mean.a (time-series of prior means of intercept, a)
+#' * prior.var.a (time-series of prior variances of intercept, a)
+#' * y.hat (predicted value of y(t) given y(t-1))
+#' * f (time-series of prediction variances)
+#' * v (time-series of prediction error)
+#' * post.mean.a (time-series of posterior means of intercept, a)
+#' * post.var.a (time-series of posterior variances of intercept, a)
+#' * filter.y (filtered estimate of y) 
+#' * neg.log.like (time-series of negative log-likelihoods)
+#' * p.star (ratio of the posterior variance in year r, to the prior variance in year t+1 of intercept, a)
+#' * smoothe.mean.a (time-series of smoothed posterior means of interecept, a)
+#' * smoothe.var.a (time-series of smoothed posterior variances of interecept, a)
+#' * smoothe.y (smoothed estimate of y)
+#' * cum.neg.log.lik (cumulative negative log-likelihood) 
+#' * init.mean.a (starting mean for intercept)
+#' * init.var.a (starting variance for intercept)
+#' * a.bar (mean intercept value, not implemented)
+#' * b (slope parameter)
+#' * sig.e (standard deviation of observation error)
+#' * sig.w (standard deviation of system error)
+#' * rho (autocorrelation in intercept estimates, not implemented)
+#' * N.tot (number of non-NA years in spawner time-series)
+#' * N.cond (Number of years to omit when calculating the concentrated likelihood for the data set. 
+#' See Visser and Molenaar (1988).  Default is zero)
+#' * Param (number of parameter estimated in the maximum likelihood)
+#' * AICc (Akaike Information Criterion for small sample sizes)
+#' * Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
 #'
 
 "kf.rw" <- function(initial, x, y)
