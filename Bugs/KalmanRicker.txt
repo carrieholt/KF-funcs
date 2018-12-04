@@ -1,0 +1,21 @@
+#Ricker model
+model{
+    for (i in 1:N) {                       #loop over N sample points
+    R_Obs[i] ~ dlnorm(Y[i],tau_R)          #likelihood 
+    Y[i] <- RS[i] +log(S[i])               #calc log(R)
+    RS[i] <- alpha[i] - beta * S[i] + v[i]           # ricker model 
+    v[i] ~dnorm(0, tauv)
+    year[i]<-i
+   }
+   for (i in 2:N){
+      alpha[i] <- alpha[i-1] + w[i]
+      w[i]~ dnorm(0,tauw)
+   }
+    alpha[1] ~ dnorm(0,0.000001)               #prior for alpha
+    beta ~ dnorm(0,0.000001)I(0.000001,)
+    tau_R ~ dgamma(0.001,0.001)                    #prior for precision parameter
+    tauv ~ dgamma(0.01,0.001)
+    tauw~ dgamma(0.01,0.001)
+    Smax<- 1/beta
+}
+
