@@ -4,6 +4,22 @@
 # Developed by Brice MacGregror (2001), adapted by Brian Pyper, Brigitte Dorner and Carrie Holt (2002-2018)
 # For further inquires contact Carrie Holt: carrie.holt@dfo-mpo.gc.ca
 
+#' Kalman filter random walk
+#'
+#' @param init.mean.a 
+#' @param init.var.a 
+#' @param b 
+#' @param ln.sig.e 
+#' @param ln.sig.w 
+#' @param x 
+#' @param y 
+#' @param Ts 
+#'
+#' @return List of x, y, prior.mean.a, prior.var.a, y.hat, f, v, post.mean.a, post.var.a, filter.y, neg.log.like,
+#' p.star, smoothe.mean.a, smoothe.var.a, smoothe.y, cum.neg.log.lik, init.mean.a, init.var.a, a.bar, b, sig.e,
+#' sig.w, rho
+#' @export
+#'
 "kalman.rw" <- function(init.mean.a, init.var.a, b, ln.sig.e, ln.sig.w, x, y, Ts = 0)
 {
   # Intially Written for S-Plus 2000, Professional Release 2, later revised for R
@@ -146,6 +162,18 @@
 # END
 #***********************************************************************************
 
+#' Cumulative negative log-likelihood
+#'
+#' @param optim.vars 
+#' @param init.mean.a 
+#' @param init.var.a 
+#' @param x 
+#' @param y 
+#' @param Ts 
+#'
+#' @return Cumulative negative log-likelihood
+#' @export
+#'
 "kalman.rw.fit" <- function(optim.vars, init.mean.a, init.var.a, x, y, Ts)
   # a little helper function for ML fitting
   # we need this in R because the optimizer functions are different from those in S (added by Brigitte Dorner)
@@ -158,6 +186,18 @@
 
 # kf.rw
 # Uses "kalman.rw" to estimates a linear regression model with time-varying intercept that follows a random walk
+#' Kalman filter run
+#'
+#' @param initial 
+#' @param x 
+#' @param y 
+#'
+#' @return
+#' @export List of x, y, prior.mean.a, prior.var.a, y.hat, f, v, post.mean.a, post.var.a, filter.y, neg.log.like,
+#' p.star, smoothe.mean.a, smoothe.var.a, smoothe.y, cum.neg.log.lik, init.mean.a, init.var.a, a.bar, b, sig.e,
+#' sig.w, rho, N.tot, N.cond, Param, AICc, Report
+#'
+
 "kf.rw" <- function(initial, x, y)
 {
   # Purpose:
