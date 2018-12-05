@@ -186,7 +186,8 @@
 
 #' Cumulative negative log-likelihood
 #'
-#' @param optim.vars Vector of initial values for variables to be estimated (b, ln.sig.e, ln.sig.w)
+#' @param optim.vars Vector of initial values for variables to be estimated (initial mean a, 
+#' initial variance of a, b, ln.sig.e, ln.sig.w, Ts)
 #' @param init.mean.a Starting mean for intercept, a
 #' @param init.var.a Starting variance for intercept, a
 #' @param x Independent variable in obs. equation
@@ -211,7 +212,15 @@
 # Uses "kalman.rw" to estimates a linear regression model with time-varying intercept that follows a random walk
 #' Kalman filter run
 #'
-#' @param initial Vector of initial values for variables to be estimated (b, ln.sig.e, ln.sig.w)
+#' @param initial List of initial values for variables to be estimated. The names of the list elements must be
+#' * initial$mean.a  Initial value for mean of intercept in recursive calculations
+#' * initial$var.a   Initial value for variance of intercept in recursive calculations
+#' * initial$b     Starting value of slope for ML estimation
+#' * initial$ln.sig.e, initial$ln.sig.w Starting values for natural logarithms of error terms in 
+#'        observation and system equations
+#' * initial$Ts     Number of observations at start of data set to omit for
+#          calculation of variance in observation equation and concentrated
+#          likelihood function. 
 #' @param x Independent variable in obs. equation
 #' @param y Dependent variable in obs. equation
 #'
