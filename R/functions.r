@@ -174,11 +174,29 @@
   b <- as.vector(b)
   sig.e <- as.vector(sig.e)
   sig.w <- as.vector(sig.w)
-  out <- list(x = x, y = y, prior.mean.a = prior.mean.a, prior.var.a = prior.var.a, y.hat = y.hat, f = f,
-              v = v, post.mean.a = post.mean.a, post.var.a = post.var.a, filter.y = filter.y, neg.log.like = 
-                neg.log.like, p.star = p.star, smoothe.mean.a = smoothe.mean.a, smoothe.var.a = smoothe.var.a,
-              smoothe.y = smoothe.y, cum.neg.log.lik = cum.neg.log.lik, init.mean.a = init.mean.a, init.var.a = 
-                init.var.a, a.bar = NA, b = b, sig.e = sig.e, sig.w = sig.w, rho = NA)
+  out <- list(x = x, 
+              y = y, 
+              prior.mean.a = prior.mean.a, 
+              prior.var.a = prior.var.a,
+              y.hat = y.hat, 
+              f = f,
+              v = v, 
+              post.mean.a = post.mean.a, 
+              post.var.a = post.var.a, 
+              filter.y = filter.y, 
+              neg.log.like = neg.log.like, 
+              p.star = p.star, 
+              smoothe.mean.a = smoothe.mean.a, 
+              smoothe.var.a = smoothe.var.a,
+              smoothe.y = smoothe.y, 
+              cum.neg.log.lik = cum.neg.log.lik, 
+              init.mean.a = init.mean.a, 
+              init.var.a = init.var.a, 
+              a.bar = NA, 
+              b = b, 
+              sig.e = sig.e, 
+              sig.w = sig.w,
+              rho = NA)
   out
 }
 # END
