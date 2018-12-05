@@ -1,8 +1,10 @@
 Package: KFfuncs
 Version: 0.0.0.1000
 Title: Kalman filter functions
-Description: Functions required for Kalman filter estimation of time-varying 
-  productivity within Ricker stock-recruitment relationship
+Description: This package contains functions required for Kalman filter estimation of time-varying 
+  productivity within Ricker stock-recruitment relationship. The code was initially developed by 
+  Brice MacGregror in Splus and subsequently adapted by Brian Pyper, Brigitte Dorner and 
+  Carrie Holt.
 Authors@R: c(
     person("Carrie", "Holt", , "carrie.holt@dfo-mpo.gc.ca", role = c("aut", "cre"))
   )

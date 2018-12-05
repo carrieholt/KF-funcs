@@ -258,7 +258,8 @@
 #' * Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
 #'
 #' @examples
-#' Stellako <- readRDS("data/Stellako.RDS")  #Effective total spawners, ETS, and recruitment, Rec for a salmon stock, Stellako
+#' #Stellako <- readRDS("data/Stellako.RDS") #Effective total spawners, ETS, and 
+#'  # recruitment, Rec for a salmon stock, Stellako
 #' x <-Stellako$ETS
 #' y <-log(Stellako$Rec/Stellako$ETS)
 #' initial <- list()
