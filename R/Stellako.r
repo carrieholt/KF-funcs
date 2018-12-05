@@ -1,7 +1,8 @@
-#' Stellako data
+#' @name Stellako 
+#' @title Stellako data
 #'
-#' Data from on Effective Total Spawners,  ETS, and recruitment, Rec for
-#' one sockeye salmon stock, Stellako
+#' @description This dataset includes Effective Total Spawners,  ETS, and recruitment, Rec for
+#' one sockeye salmon stock, Stellako.
 #'
 #' @docType data
 #'

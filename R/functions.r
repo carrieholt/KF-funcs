@@ -226,6 +226,7 @@
 #' @param x Independent variable in obs. equation
 #' @param y Dependent variable in obs. equation
 #'
+#' @importFrom stats lm nlminb
 #' @return Returns a list of: 
 #' * x (independent variable in obs. equation) 
 #' * y (dependent variable in obs. equation)
