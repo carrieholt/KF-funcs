@@ -62,8 +62,7 @@ See Visser and Molenaar (1988).  Default is 1)
 Kalman filter run
 }
 \examples{
-#Stellako <- readRDS("data/Stellako.RDS") #Effective total spawners, ETS, and 
- # recruitment, Rec for a salmon stock, Stellako
+data(Stellako) #Effective total spawners, ETS, and recruitment, Rec for a salmon stock, Stellako
 x <-Stellako$ETS
 y <-log(Stellako$Rec/Stellako$ETS)
 initial <- list()
