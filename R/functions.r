@@ -14,7 +14,7 @@
 #' @param x Independent variable in obs. equation
 #' @param y Dependent variable in obs. equation
 #' @param Ts Number of years to omit when calculating the concentrated likelihood for the data set. 
-#' See Visser and Molenaar (1988).  Default is zero.
+#' See Visser and Molenaar (1988).  Default is 1.
 #'
 #' @return Returns a list of: 
 #' * x (independent variable in obs. equation) 
@@ -76,7 +76,7 @@
   # x     Independent variable in obs. equation 
   # y     Dependent variable in obs. equation
   # Ts    Number of years to omit when calculating the concentrated likelihood
-  #     for the data set. See Visser and Molenaar (1988).  Default is zero.
+  #     for the data set. See Visser and Molenaar (1988).  Default is 1.
   # *The natural log for the standard deviations of noise terms are used as inputs rather
   # than the straight standard deviations to ensure that the maximum likelihood procedure
   # only returns values that are greater than or equal to 1.  The function returns
@@ -193,7 +193,7 @@
 #' @param x Independent variable in obs. equation
 #' @param y Dependent variable in obs. equation
 #' @param Ts Number of years to omit when calculating the concentrated likelihood for the data set. 
-#' See Visser and Molenaar (1988).  Default is zero.
+#' See Visser and Molenaar (1988).  Default is 1.
 #'
 #' @return Cumulative negative log-likelihood
 #' @export
@@ -213,14 +213,16 @@
 #' Kalman filter run
 #'
 #' @param initial List of initial values for variables to be estimated. The names of the list elements must be
-#' * initial$mean.a  Initial value for mean of intercept in recursive calculations
-#' * initial$var.a   Initial value for variance of intercept in recursive calculations
-#' * initial$b     Starting value of slope for ML estimation
+#' * initial$mean.a Initial value for mean of intercept in recursive calculations
+#' * initial$var.a Initial value for variance of intercept in recursive calculations
+#' * initial$b Starting value of slope for ML estimation
 #' * initial$ln.sig.e, initial$ln.sig.w Starting values for natural logarithms of error terms in 
 #'        observation and system equations
-#' * initial$Ts     Number of observations at start of data set to omit for
-#          calculation of variance in observation equation and concentrated
-#          likelihood function. 
+#' * initial$Ts Number of observations at start of data set to omit for
+#'         calculation of variance in observation equation and concentrated
+#'          likelihood function. 
+#' * initial$Estb True/False: Should Ricker b parameter be estimated within the KF?         
+
 #' @param x Independent variable in obs. equation
 #' @param y Dependent variable in obs. equation
 #'
@@ -250,11 +252,26 @@
 #' * rho (autocorrelation in intercept estimates, not implemented)
 #' * N.tot (number of non-NA years in spawner time-series)
 #' * N.cond (Number of years to omit when calculating the concentrated likelihood for the data set. 
-#' See Visser and Molenaar (1988).  Default is zero)
+#' See Visser and Molenaar (1988).  Default is 1)
 #' * Param (number of parameter estimated in the maximum likelihood)
 #' * AICc (Akaike Information Criterion for small sample sizes)
 #' * Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
 #'
+#' @examples
+#' Stellako <- readRDS("data/Stellako.RDS")  #Effective total spawners, ETS, and recruitment, Rec for a salmon stock, Stellako
+#' x <-Stellako$ETS
+#' y <-log(Stellako$Rec/Stellako$ETS)
+#' initial <- list()
+#' initial$mean.a <- lm(y~x)$coef[1]
+#' initial$var.a <- 1
+#' initial$b <- -lm(y~x)$coef[2]
+#' initial$ln.sig.e <- log(1)
+#' initial$ln.sig.w <- log(1)
+#' initial$Ts <- 1
+#' initial$EstB <- "True"
+#' \dontrun{
+#'   kf.rw(initial=initial,x=x,y=y)
+#' }
 #' @export 
 #'
 
@@ -280,6 +297,7 @@
   #     initial$Ts     Number of observations at start of data set to omit for
   #          calculation of variance in observation equation and concentrated
   #          likelihood function. 
+  #     initial$Estb   True/False: should Ricker b paramter be estimated within the KF?
   # x, y   Data for the observation equation
   # Other functions called: 
   # =======================

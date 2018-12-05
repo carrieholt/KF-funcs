@@ -22,7 +22,7 @@ kalman.rw(init.mean.a, init.var.a, b, ln.sig.e, ln.sig.w, x, y, Ts = 0)
 \item{y}{Dependent variable in obs. equation}
 
 \item{Ts}{Number of years to omit when calculating the concentrated likelihood for the data set.
-See Visser and Molenaar (1988).  Default is zero.}
+See Visser and Molenaar (1988).  Default is 1.}
 }
 \value{
 Returns a list of:

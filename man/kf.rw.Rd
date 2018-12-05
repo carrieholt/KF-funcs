@@ -7,7 +7,18 @@
 kf.rw(initial, x, y)
 }
 \arguments{
-\item{initial}{Vector of initial values for variables to be estimated (b, ln.sig.e, ln.sig.w)}
+\item{initial}{List of initial values for variables to be estimated. The names of the list elements must be
+\itemize{
+\item initial$mean.a Initial value for mean of intercept in recursive calculations
+\item initial$var.a Initial value for variance of intercept in recursive calculations
+\item initial$b Starting value of slope for ML estimation
+\item initial$ln.sig.e, initial$ln.sig.w Starting values for natural logarithms of error terms in
+observation and system equations
+\item initial$Ts Number of observations at start of data set to omit for
+calculation of variance in observation equation and concentrated
+likelihood function.
+\item initial$Estb True/False: Should Ricker b parameter be estimated within the KF?
+}}
 
 \item{x}{Independent variable in obs. equation}
 
@@ -41,7 +52,7 @@ Returns a list of:
 \item rho (autocorrelation in intercept estimates, not implemented)
 \item N.tot (number of non-NA years in spawner time-series)
 \item N.cond (Number of years to omit when calculating the concentrated likelihood for the data set.
-See Visser and Molenaar (1988).  Default is zero)
+See Visser and Molenaar (1988).  Default is 1)
 \item Param (number of parameter estimated in the maximum likelihood)
 \item AICc (Akaike Information Criterion for small sample sizes)
 \item Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
@@ -49,4 +60,20 @@ See Visser and Molenaar (1988).  Default is zero)
 }
 \description{
 Kalman filter run
+}
+\examples{
+data(Stellako)  #Effective total spawners, ETS, and recruitment, Rec for a salmon stock, Stellako
+x <-Stellako$ETS
+y <-log(Stellako$Rec/Stellako$ETS)
+initial <- list()
+initial$mean.a <- lm(y~x)$coef[1]
+initial$var.a <- 1
+initial$b <- -lm(y~x)$coef[2]
+initial$ln.sig.e <- log(1)
+initial$ln.sig.w <- log(1)
+initial$Ts <- 1
+initial$EstB <- "True"
+\dontrun{
+  kf.rw(initial=initial,x=x,y=y)
+}
 }
