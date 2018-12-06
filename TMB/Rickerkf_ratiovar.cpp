@@ -59,6 +59,7 @@ Type objective_function<Type>::operator() ()
 
   //priors on precision and variance ratio
   Type ans= -dbeta(rho,prbeta1,prbeta2,true);  
+  
   //Type ans= -dbeta(rho,Type(1.0),Type(1.0),true);  
   //ans+= -dnorm(logvarphi,Type(0.0),Type(5.0),true);   
   //ans+= -dgamma(varphi,Type(0.001),Type(0.001),true);   
@@ -66,7 +67,7 @@ Type objective_function<Type>::operator() ()
   ans+= -dnorm(alpha(0),alphao,tau,true);
   umsy(0)     = Type(.5) * alpha(0) - Type(0.07) * (alpha(0) * alpha(0)); 
 
-  //Type ans= -dnorm(alpha(0),alphao,tau,true); 
+
   
   for(int i=1;i<timeSteps;i++){
   
