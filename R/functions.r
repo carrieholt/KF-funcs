@@ -274,7 +274,7 @@
 #' See Visser and Molenaar (1988).  Default is 1)
 #' * Param (number of parameter estimated in the maximum likelihood)
 #' * AICc (Akaike Information Criterion for small sample sizes)
-#' * Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
+#' * Report (output from the maximum likehood estimation of b, ln.sig.e and ln.sig.w)
 #'
 #' @examples
 #' data(Stellako) #Effective total spawners, ETS, and recruitment, Rec for a salmon stock, Stellako
