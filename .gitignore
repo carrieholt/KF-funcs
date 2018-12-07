@@ -20,3 +20,5 @@
 *knitr-cache-tex
 *knitr-figs
 Harrison_Apr18.csv
+*.o
+*.dll
