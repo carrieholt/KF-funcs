@@ -25,9 +25,9 @@ mydata<-list(obs_logR=log(Stellako$Rec),
   prbeta2=1.0
   )
 
-compile("Rickerkf_ratiovar.cpp", "-O1 -g", DLLFLAGS="")
+compile("Ricker_rb_ratiovar.cpp", "-O1 -g", DLLFLAGS="")
 
-dyn.load("Rickerkf_ratiovar")
+dyn.load("Ricker_rb_ratiovar")
 
 
 parameters <- list(
@@ -37,7 +37,7 @@ parameters <- list(
   logvarphi= 0.1,
   alpha=rep(0.9,length(mydata$obs_logR))  )
 
-obj<-MakeADFun(mydata,parameters,random="alpha",DLL="Rickerkf_ratiovar")
+obj<-MakeADFun(mydata,parameters,random="alpha",DLL="Ricker_rb_ratiovar")
 newtonOption(obj, smartsearch=FALSE)
 
 opt<-nlminb(obj$par,obj$fn,obj$gr)
@@ -60,6 +60,56 @@ fitmcmc1 <- tmbstan(obj, chains=3,
 
     
 
+#=====================================
+#Kalman Filter TMB
+
+
+library(TMB)
+#library(ggplot)
+
+library(tmbstan)
+devtools::load_all()
+
+#===============================================================
+#Stellako
+x <-Stellako$ETS
+y <-log(Stellako$Rec/Stellako$ETS)
+
+
+mydata<-list(x=Stellako$ETS,
+  y=log(Stellako$Rec/Stellako$ETS)
+  )
+
+compile("Rickerkf.cpp", "-O1 -g", DLLFLAGS="")
+
+dyn.load("Rickerkf")
+
+
+parameters <- list(
+  initmeana = lm(y~x)$coefficients[[1]],
+  initvara = 1,
+  b = -lm(y~x)$coefficients[[2]],
+  logsige = log(1),
+  logsigw = log(1) )
+
+objkf<-MakeADFun(mydata,parameters,DLL="Rickerkf")
+ 
+newtonOption(objkf, smartsearch=FALSE)
+
+optkf<-nlminb(objkf$par,objkf$fn,objkf$gr)
+repkf<-objkf$report()
+
+
+#MCMC
+#fitmcmc1 <- tmbstan(objkf, chains=3,
+#              iter=1000000, init="random",
+#               control = list(adapt_delta = 0.98))
+
+#  mc <- extract(fitmcmc1, pars=names(obj$par),
+#            inc_warmup=TRUE, permuted=FALSE)
+    
+
+#    fit_summary <- summary(fitmcmc1)
 
 
 #=====================================
