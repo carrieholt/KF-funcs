@@ -14,21 +14,25 @@ Type objective_function<Type>::operator() ()
   //alpha       -> Time-varying alpha
 
   PARAMETER(initmeana);
-  PARAMETER(initvara);
+  PARAMETER(loginitvara);
   PARAMETER(b);
   PARAMETER(logsige);
   PARAMETER(logsigw);
 
   Type sige = exp(logsige);
   Type sigw = exp(logsigw);
+  Type initvara = exp(loginitvara);
 
   int Tmax = x.size();
 
   vector<Type> priormeana(Tmax),  priorvara(Tmax), yhat(Tmax),
   f(Tmax), v(Tmax), postmeana(Tmax), postvara(Tmax), filtery(Tmax),
-  pstar(Tmax), smoothemeana(Tmax), smoothevara(Tmax), smoothey(Tmax);
+   smoothemeana(Tmax), smoothevara(Tmax), smoothey(Tmax);
 
-  Type ans= Type(0.0);
+
+  vector<Type> pstar(Tmax-1);
+  
+  Type ans = Type(0.0);
 
   
   
@@ -42,7 +46,7 @@ Type objective_function<Type>::operator() ()
   postmeana(0) = priormeana(0) + (priorvara(0) * (v(0)/f(0)));
   postvara(0) = priorvara(0) - (priorvara(0)*priorvara(0)/f(0));
   filtery(0) = postmeana(0) + b * x(0);
-  ans +=  (log(f(0)) + (v(0)*v(0)/f(0)))/2;
+  ans +=  (log(f(0)) + (v(0)*v(0)/f(0)))/Type(2.);
 
 
 
@@ -50,6 +54,8 @@ Type objective_function<Type>::operator() ()
      
     priormeana(t) = postmeana(t-1);
     priorvara(t) = postvara(t-1) + sigw*sigw;
+    
+    //Step 2: Generate predicted value for y(t) given y(t-1) and error
     yhat(t) = priormeana(t) + b * x(t);
     v(t) = y(t) - yhat(t);
     f(t) = priorvara(t) + sige*sige;
@@ -69,6 +75,7 @@ Type objective_function<Type>::operator() ()
   
   smoothemeana(Tmax-1) = postmeana(Tmax-1);
   smoothevara(Tmax-1) = postvara(Tmax-1);
+  smoothey(Tmax-1) = smoothemeana(Tmax-1) + b * x(Tmax-1);
   
 
   for(int i=Tmax-2; i>=0; --i){
@@ -76,10 +83,11 @@ Type objective_function<Type>::operator() ()
       pstar(i) = postvara(i)/priorvara(i + 1);
       smoothemeana(i) = postmeana(i) + pstar(i) * (smoothemeana(i + 1) - priormeana(i + 1));
       smoothevara(i) = postvara(i) + pstar(i)*pstar(i) * (smoothevara(i + 1) - priorvara(i + 1));    
-      smoothey(i) <- smoothemeana(i) + b * x(i);
+      smoothey(i) = smoothemeana(i) + b * x(i);
   }
 
   
+   REPORT(ans)
    REPORT(Tmax)
    REPORT(priormeana)
    REPORT(priorvara)
@@ -90,7 +98,7 @@ Type objective_function<Type>::operator() ()
    REPORT(postvara)
    REPORT(filtery)
    REPORT(pstar)
-   REPORT(smoothemeana)
+   ADREPORT(smoothemeana)
    REPORT(smoothevara)
    REPORT(smoothey)
    REPORT(initmeana)
