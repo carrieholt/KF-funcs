@@ -33,6 +33,6 @@ LinkingTo:
     TMB,
     RcppEigen
 Imports: 
-    Rcpp
+    Rcpp,
     TMB (>= 1.7.13),
     stats

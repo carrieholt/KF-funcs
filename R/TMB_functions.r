@@ -6,13 +6,12 @@
 
 
 
-#' Fit teh analytical solution for the Kalman Filter Ricker stock recruitment model
+#' Fit the analytical solution for the Kalman Filter Ricker stock recruitment model
 #'
 #' @param data A list or data frame containing Spawners (S) and Recruits (R) time series. No NA allowed at this point in time
 #' 
-#'  @param silent Silent or optimization details?
+#' @param silent Silent or optimization details?
 #' 
-
 kfTMB <- function(data,  silent = FALSE, control = kfTMBcontrol()) {
 
   #===================================
@@ -25,9 +24,9 @@ kfTMB <- function(data,  silent = FALSE, control = kfTMBcontrol()) {
 
 
   tmb_params <- list(
-    initmeana   = lm(y~x, data=data)$coefficients[[1]],
+    initmeana   = lm(y~x, data=tmb_data)$coefficients[[1]],
     loginitvara = log(1),
-    b           = lm(y~x, data=data)$coefficients[[2]],
+    b           = lm(y~x, data=tmb_data)$coefficients[[2]],
     logsige     = log(1),
     logsigw     = log(1)
   )

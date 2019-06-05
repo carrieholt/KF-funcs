@@ -55,7 +55,7 @@ Returns a list of:
 See Visser and Molenaar (1988).  Default is 1)
 \item Param (number of parameter estimated in the maximum likelihood)
 \item AICc (Akaike Information Criterion for small sample sizes)
-\item Report (output from the maximum likehood esitmation of b, ln.sig.e and ln.sig.w)
+\item Report (output from the maximum likehood estimation of b, ln.sig.e and ln.sig.w)
 }
 }
 \description{
