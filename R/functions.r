@@ -317,7 +317,7 @@
   #     initial$Ts     Number of observations at start of data set to omit for
   #          calculation of variance in observation equation and concentrated
   #          likelihood function. 
-  #     initial$Estb   True/False: should Ricker b paramter be estimated within the KF?
+  #     initial$EstB   TRUE/FALSE: should Ricker b paramter be estimated within the KF?
   # x, y   Data for the observation equation
   # Other functions called: 
   # =======================
@@ -346,8 +346,8 @@
   
   
   # Perform recursive calculations for KF with ML estimates:
-  if (initial$EstB=="True") {out <- kalman.rw(initial$mean.a, initial$var.a, fit$par[1], fit$par[2], fit$par[3], x, y, initial$Ts)}
-  if (initial$EstB=="False") 
+  if (initial$EstB==TRUE) {out <- kalman.rw(initial$mean.a, initial$var.a, fit$par[1], fit$par[2], fit$par[3], x, y, initial$Ts)}
+  if (initial$EstB==FALSE) 
   {
     lm.b<-lm(y~x)$coef[2]
     out <- kalman.rw(initial$mean.a, initial$var.a, lm.b, fit$par[2], fit$par[3], x, y, initial$Ts)
