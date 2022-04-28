@@ -131,6 +131,7 @@
       post.var.a[t] <- prior.var.a[t]
       #filter.y[t] <- post.mean.a[t] + b * x[t]
       # Step 4: Calculate the concentrated likelihood function:
+      
       neg.log.like[t] <- 0
     }
     else {
