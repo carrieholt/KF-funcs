@@ -1,10 +1,10 @@
-all: banana avocado
+all: Ricker_rb_ratiovar.dll Rickerkf.dll
 
-banana: Ricker_rb_ratiovar.cpp
-	Rscript --vanilla -e "TMB::compile('Ricker_rb_ratiovar.cpp')"
+Ricker_rb_ratiovar.dll: Ricker_rb_ratiovar.cpp
+	Rscript --vanilla -e "TMB::compile('Ricker_rb_ratiovar.cpp','-O1 -g',DLLFLAGS='')"
 
-avocado: Rickerkf.cpp
-	Rscript --vanilla -e "TMB::compile('Rickerkf.cpp')"
+Rickerkf.dll: Rickerkf.cpp
+	Rscript --vanilla -e "TMB::compile('Rickerkf.cpp', '-O1 -g',DLLFLAGS='')"
 
 clean:
-	rm -rf *o
+	rm -rf *.dll

@@ -12,6 +12,8 @@
 #' 
 #' @param silent Silent or optimization details?
 #' 
+#' 
+#' @export
 kfTMB <- function(data,  silent = FALSE, control = kfTMBcontrol()) {
 
   #===================================
@@ -107,6 +109,20 @@ get_convergence_diagnostics <- function(sd_report) {
     }
   }
   invisible(list(final_grads = final_grads, bad_eig = bad_eig))
+}
+
+
+
+#' Roxygen commands
+#'
+#' This is a dummy function who's purpose is to hold the useDynLib roxygen tag.
+#' This tag will populate the namespace with compiled c++ functions upon package install.
+#'
+#' @useDynLib Rickerkf
+#' @useDynLib Ricker_rb_ratiovar
+#'
+dummy <- function(){
+  return(NULL)
 }
 
 
