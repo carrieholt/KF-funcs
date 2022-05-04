@@ -326,12 +326,12 @@
   # Read starting conditions from initial
   # Maximum Likelihood Estimation:
   #   Creates object "fit" to store ML estimates, using nlminb (from Brigitte Dorner)
-  fit <- nlminb(start=c(initial$b, initial$ln.sig.e, initial$ln.sig.w), objective=kalman.rw.fit,
-                gradient = NULL, hessian = NULL, scale = 1, control = list(), lower = -Inf, upper = Inf,
-                initial$mean.a, initial$var.a, x, y, initial$Ts)
-  #fit <- optim(par=c(initial$b, initial$ln.sig.e, initial$ln.sig.w), fn=kalman.rw.fit,
-  #       gr = NULL, method="L-BFGS-B", hessian = TRUE, control = list(fnscale=1), lower = -Inf, upper = Inf,
-  #       initial$mean.a, initial$var.a, x, y, initial$Ts)
+  #fit <- nlminb(start=c(initial$b, initial$ln.sig.e, initial$ln.sig.w), objective=kalman.rw.fit,
+  #              gradient = NULL, hessian = NULL, scale = 1, control = list(), lower = -Inf, upper = Inf,
+  #              initial$mean.a, initial$var.a, x, y, initial$Ts)
+  fit <- optim(par=c(initial$b, initial$ln.sig.e, initial$ln.sig.w), fn=kalman.rw.fit,
+         gr = NULL, method="L-BFGS-B", hessian = TRUE, control = list(fnscale=1), lower = -Inf, upper = Inf,
+         initial$mean.a, initial$var.a, x, y, initial$Ts)
   #if(diag(fit$hessian)[3]!=0){fisher_info <- solve(fit$hessian)}
   #if(diag(fit$hessian)[3]==0) fisher_info <- solve(fit$hessian[1:2,1:2])#no process error, sig.w
   #prop_sigma <- sqrt(diag(fisher_info))
