@@ -146,10 +146,10 @@ rbTMB <- function(data, priorratiovar=c(2,2), silent = FALSE, control = TMBcontr
 
   tmb_params <- list(
     alphao   = srlm$coefficients[[1]],
-    logSmax = log(1/srlm$coefficients[[2]]),
+    logSmax = log(1/-srlm$coefficients[[2]]),
     rho = 0.5,
     logvarphi = log(1),
-    alpha = rep(srlm$coefficients[[1]],nrow(data))
+    alpha = rep(srlm$coefficients[[1]],length(tmb_data$obs_logRS))
   )
 
   #to be implemented
