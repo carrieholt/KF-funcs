@@ -4,7 +4,7 @@
 \alias{kfTMB}
 \title{Fit the analytical solution for the Kalman Filter Ricker stock recruitment model}
 \usage{
-kfTMB(data, silent = FALSE, control = kfTMBcontrol())
+kfTMB(data, silent = FALSE, control = TMBcontrol())
 }
 \arguments{
 \item{data}{A list or data frame containing Spawners (S) and Recruits (R) time series. No NA allowed at this point in time}

@@ -354,7 +354,11 @@
   }
   N <- length(x) - sum(is.na(x))
   param <- 3
-  AICc <- 2 * out$cum.neg.log.lik[1] + 2 * param * ((N - initial$Ts)/(N - initial$Ts - param - 1))
+  #AICc <- 2 * out$cum.neg.log.lik[1] + 2 * param * ((N - initial$Ts)/(N - initial$Ts - param - 1))
+  #from CM code
+  AICc <- 2 * out$cum.neg.log.lik[1] + 2 * param + (2 * param *(param + 1)) /(N - initial$Ts - param - 1)
+  BIC <- 2 * out$cum.neg.log.lik[1] + param * log(N - initial$Ts)
+  
   out$N.tot <- N
   out$N.cond <- initial$Ts
   out$Param <- param

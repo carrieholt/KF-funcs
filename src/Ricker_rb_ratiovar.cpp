@@ -18,7 +18,7 @@ template<class Type>
 Type objective_function<Type>::operator() ()
 {
 
-  DATA_VECTOR(obs_logR);   // observed log recruitment
+  DATA_VECTOR(obs_logRS);   // observed log recruitment
   DATA_VECTOR(obs_S);    // observed  Spawner
   
   DATA_SCALAR(prbeta1);
@@ -30,7 +30,7 @@ Type objective_function<Type>::operator() ()
   //alpha       -> Time-varying alpha
 
   PARAMETER(alphao);
-  PARAMETER(logbeta);
+  PARAMETER(logSmax);
   PARAMETER(rho);
   PARAMETER(logvarphi);
 
@@ -38,10 +38,10 @@ Type objective_function<Type>::operator() ()
   
 
   
-  int timeSteps=obs_logR.size();
+  int timeSteps=obs_logRS.size();
 
-  Type beta=exp(logbeta);
-  Type Smax  = Type(1.0)/beta;
+  Type Smax = exp(logSmax);
+  Type beta  = Type(1.0)/Smax;
   
   //theta       -> total standard deviation
   //sig         -> obs error std
@@ -53,7 +53,8 @@ Type objective_function<Type>::operator() ()
   Type tau        = sqrt(Type(1.0)-rho) * theta ;
 
 
-  vector<Type> pred_logR(timeSteps), logRS(timeSteps),umsy(timeSteps);
+  vector<Type> pred_logR(timeSteps), pred_logRS(timeSteps), umsy(timeSteps), Smsy(timeSteps), residuals(timeSteps);
+  vector<Type> Srep(timeSteps);
 
   
 
@@ -66,7 +67,8 @@ Type objective_function<Type>::operator() ()
 
   ans+= -dnorm(alpha(0),alphao,tau,true);
   umsy(0)     = Type(.5) * alpha(0) - Type(0.07) * (alpha(0) * alpha(0)); 
-
+  Smsy(0)  =  alpha(0)/beta * (Type(0.5) -Type(0.07) * alpha(0));  
+  Srep(0)  = alpha(0)/beta;
 
   
   for(int i=1;i<timeSteps;i++){
@@ -76,25 +78,36 @@ Type objective_function<Type>::operator() ()
   }
 
   for(int i=0;i<timeSteps;i++){
-    if(!isNA(obs_logR(i))){
-      logRS(i) = alpha(i) - beta * obs_S(i) ;
-      pred_logR(i) = logRS(i) + log(obs_S(i));
-      umsy(i)     = Type(.5) * alpha(i) - Type(0.07) * (alpha(i) * alpha(i)); 
-      ans+=-dnorm(obs_logR(i),pred_logR(i),sig,true);
+    if(!isNA(obs_logRS(i))){
+      
+      pred_logRS(i) = alpha(i) - beta * obs_S(i) ;
+      pred_logR(i) = pred_logRS(i) + log(obs_S(i));
+
+      umsy(i) = Type(.5) * alpha(i) - Type(0.07) * (alpha(i) * alpha(i)); 
+      Smsy(i) =  alpha(i)/beta * (Type(0.5) -Type(0.07) * alpha(i));
+      Srep(i) = alpha(i)/beta;
+
+      residuals(i) = obs_logRS(i) - pred_logRS(i);
+      ans+=-dnorm(obs_logRS(i),pred_logRS(i),sig,true);
     }
   
   }
 
+  REPORT(pred_logRS)
   REPORT(pred_logR)
-  REPORT( alpha)
-  REPORT(sig)
-  REPORT(tau)
+  REPORT(alpha)
+  ADREPORT(sig)
+  ADREPORT(tau)
   REPORT(rho)
-  REPORT(beta)
+  REPORT(theta)
+  REPORT(residuals)
+  ADREPORT(beta)
   REPORT(varphi)
   REPORT(alphao)
-  REPORT(Smax)
-  REPORT(umsy)
+  ADREPORT(Smax)
+  ADREPORT(umsy)
+  ADREPORT(Smsy)
+  ADREPORT(Srep)
   return ans;
 }
 

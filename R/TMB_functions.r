@@ -14,7 +14,7 @@
 #' 
 #' 
 #' @export
-kfTMB <- function(data,  silent = FALSE, control = kfTMBcontrol()) {
+kfTMB <- function(data,  silent = FALSE, control = TMBcontrol()) {
 
   #===================================
   #prepare TMB input and options
@@ -79,7 +79,7 @@ kfTMB <- function(data,  silent = FALSE, control = kfTMBcontrol()) {
 #'   [stats::nlminb()].
 #'
 #' @export
-kfTMBcontrol <- function(eval.max = 1e4, iter.max = 1e4, ...) {
+TMBcontrol <- function(eval.max = 1e4, iter.max = 1e4, ...) {
   list(eval.max = eval.max, iter.max = iter.max, ...)
 }
 
@@ -113,6 +113,92 @@ get_convergence_diagnostics <- function(sd_report) {
 
 
 
+
+
+
+#==============================================================
+#recursive Bayes version
+
+
+#' Fit the analytical solution for the Kalman Filter Ricker stock recruitment model
+#'
+#' @param data A list or data frame containing Spawners (S) and Recruits (R) time series. 
+#' No NA allowed at this point in time
+#' @param priorratiovar parameters for beta prior on variance allocation
+#' 
+#' @param silent Logical. Silent or optimization details?
+#' 
+#' 
+#' @export
+rbTMB <- function(data, priorratiovar=c(2,2), silent = FALSE, control = TMBcontrol()) {
+
+  #===================================
+  #prepare TMB input and options
+  #===================================
+  tmb_data <- list(
+    obs_logRS = log(data$R/data$S),
+    obs_S = data$S,
+    prbeta1= priorratiovar[1],
+    prbeta2= priorratiovar[2]
+  )
+
+  srlm <-lm(obs_logRS~obs_S, data=tmb_data)
+
+  tmb_params <- list(
+    alphao   = srlm$coefficients[[1]],
+    logSmax = log(1/srlm$coefficients[[2]]),
+    rho = 0.5,
+    logvarphi = log(1),
+    alpha = rep(srlm$coefficients[[1]],nrow(data))
+  )
+
+  #to be implemented
+  tmb_map <- list()
+  tmb_random <- "alpha"
+
+  #===================================
+  # TMB fit
+  #===================================
+
+  tmb_obj <- TMB::MakeADFun(
+    data = tmb_data, parameters = tmb_params, map = tmb_map,
+    random = tmb_random, DLL = "Ricker_rb_ratiovar", silent = silent)
+  
+  tmb_opt <- stats::nlminb(
+    start = tmb_obj$par, objective = tmb_obj$fn, gradient = tmb_obj$gr,
+    control = control)
+  
+  sd_report <- TMB::sdreport(tmb_obj)
+  conv <- get_convergence_diagnostics(sd_report)
+
+  structure(list(
+    model      = tmb_opt,
+    data       = data,
+    tmb_data   = tmb_data,
+    tmb_params = tmb_params,
+    tmb_map    = tmb_map,
+    tmb_random = tmb_random,
+    tmb_obj    = tmb_obj,
+    gradients  = conv$final_grads,
+    bad_eig    = conv$bad_eig,
+    call       = match.call(expand.dots = TRUE),
+    sd_report  = sd_report),
+    class      = "rbTMB")
+
+}
+
+
+
+
+
+
+
+
+
+
+#==============================================================
+#Dummy function
+
 #' Roxygen commands
 #'
 #' This is a dummy function who's purpose is to hold the useDynLib roxygen tag.
@@ -124,7 +210,6 @@ get_convergence_diagnostics <- function(sd_report) {
 dummy <- function(){
   return(NULL)
 }
-
 
 # END
 #***********************************************************************************
