@@ -1,10 +1,10 @@
 all: Ricker_rb_ratiovar.dll Rickerkf.dll
 
 Ricker_rb_ratiovar.dll: Ricker_rb_ratiovar.cpp
-	Rscript --vanilla -e "TMB::compile('Ricker_rb_ratiovar.cpp','-O1 -g',DLLFLAGS='')"
+	Rscript --vanilla -e "TMB::compile('Ricker_rb_ratiovar.cpp','-O1 -g', DLLFLAGS='', framework = 'TMBad')"
 
 Rickerkf.dll: Rickerkf.cpp
-	Rscript --vanilla -e "TMB::compile('Rickerkf.cpp', '-O1 -g',DLLFLAGS='')"
+	Rscript --vanilla -e "TMB::compile('Rickerkf.cpp', '-O1 -g',DLLFLAGS='', framework = 'TMBad')"
 
 clean:
 	rm -rf *.dll

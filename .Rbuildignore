@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\data\Harrison_Apr18.csv
-test_examples.r
+dev\test_examples.r
+^dev$
+^test_examples\.r$

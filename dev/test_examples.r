@@ -6,6 +6,9 @@
 
 
 library(ggplot2)
+
+
+#============================================
 devtools::document()
 
 #update online documentationH
@@ -17,13 +20,14 @@ devtools::document()
 devtools::build()
 
 
-detach("package:KF-funcs", unload=TRUE)
+detach("KFfuncs", unload=TRUE)
+devtools::unload("KFfuncs")
+
 path.install <-  "C:/Users/worc/Documents/KFfuncs_0.0.0.1000.tar.gz"
 
 system(paste0("Rcmd.exe INSTALL --preclean --no-multiarch --with-keep.source ", path.install))
 
 library(KFfuncs)
-
 
 
 
@@ -45,7 +49,7 @@ initial$b <- -lm(y~x)$coefficients[2]
 initial$ln.sig.e <- log(1)
 initial$ln.sig.w <- log(1)
 initial$Ts <- 0
-initial$EstB <- "TRUE"
+initial$EstB <- TRUE
 
 Stel<-kf.rw(initial=initial,x=x,y=y)
 names(Stel)
@@ -61,11 +65,6 @@ mydata<-list(S=Stellako$ETS,
   )
 
 
-    obs_logRS = log(Stellako$Rec/Stellako$ETS),
-
-summary(Stellako)
-
-
 resu <- rbTMB(data=mydata, priorratiovar=c(1,1), silent = FALSE, control = TMBcontrol())
 
 names(resu)
@@ -76,13 +75,35 @@ lowatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]-1.96*sdrep[which(rownames(sdre
 higatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]+1.96*sdrep[which(rownames(sdrep)=="alpha"),2]
 
 
-mdf<-data.frame(est_a=c(Stel$smoothe.mean.a,sdrep[which(rownames(sdrep)=="alpha"),1]),
-  type=rep(c("Kalman-filter","recursive Bayes"),each=length(x)),
-    ind=rep(1:length(x),2))
 
-mdf$lower<-c(Stel$smoothe.mean.a-1.96*Stel$"sig.w",lowatmb)
-mdf$upper<-c(Stel$smoothe.mean.a+1.96*Stel$"sig.w",higatmb)
 
+rekf <- kfTMB(data=mydata, silent = FALSE, control = TMBcontrol())
+names(rekf)
+
+cbind(sqrt(rekf$tmb_obj$report()$smoothevara),
+  kfrep[which(rownames(kfrep)=="smoothemeana"),2])
+
+kfrep <- summary(sdreport(rekf$tmb_obj))
+kfrep[which(rownames(kfrep)=="smoothemeana"),1],
+
+lowkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]-1.96*sqrt(rekf$tmb_obj$report()$smoothevara)
+higkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*sqrt(rekf$tmb_obj$report()$smoothevara)
+
+lowkftmbapprox<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]-1.96*kfrep[which(rownames(kfrep)=="smoothemeana"),2]
+higkftmbapprox<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*kfrep[which(rownames(kfrep)=="smoothemeana"),2]
+
+
+
+mdf<-data.frame(est_a=c(Stel$smoothe.mean.a,
+  sdrep[which(rownames(sdrep)=="alpha"),1],
+  kfrep[which(rownames(kfrep)=="smoothemeana"),1]),
+  type=rep(c("Kalman-filter","recursive Bayes","Kalman-filter TMB"),each=length(x)),
+    ind=rep(1:length(x),3))
+
+mdf$lower<-c(Stel$smoothe.mean.a-1.96*sqrt(Stel$smoothe.var.a),lowatmb,lowkftmb)
+mdf$upper<-c(Stel$smoothe.mean.a+1.96*sqrt(Stel$smoothe.var.a),higatmb,higkftmb)
+
+Stel$smoothe.var.a
 
 
 p <- ggplot(mdf)
@@ -91,10 +112,33 @@ p <- p + geom_ribbon(aes(x=ind,ymin=lower, ymax=upper, fill=type),alpha=0.2)
 p <- p + theme_bw(18)
 p
 
+#===============================================
+#compare analytical se and the TMB sd approximation 
+
+kfdf<-data.frame(est_a=c(Stel$smoothe.mean.a,
+  kfrep[which(rownames(kfrep)=="smoothemeana"),1],
+  kfrep[which(rownames(kfrep)=="smoothemeana"),1]),
+  type=rep(c("Kalman-filter","Kalman-filter TMB", "Kalman-filter TMB approx"),each=length(x)),
+    ind=rep(1:length(x),3))
+
+kfdf$lower<-c(Stel$smoothe.mean.a-1.96*sqrt(Stel$smoothe.var.a),lowkftmb, lowkftmbapprox)
+kfdf$upper<-c(Stel$smoothe.mean.a+1.96*sqrt(Stel$smoothe.var.a),higkftmb,higkftmbapprox)
+
+
+pp <- ggplot(kfdf)
+pp <- pp + geom_line(aes(x=ind,y=est_a, col=type),size=1.4)
+pp <- pp + geom_ribbon(aes(x=ind,ymin=lower, ymax=upper, fill=type),alpha=0.2)
+pp <- pp + theme_bw(18)
+pp
 
 
 
+cbind(
+kfrep[which(rownames(kfrep)=="smoothemeana"),1],
+sdrep[which(rownames(sdrep)=="alpha"),1],
+Stel$smoothe.mean.a)
 
+rekf$sd_report
 
 
 

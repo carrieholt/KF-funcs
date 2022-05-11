@@ -1,4 +1,11 @@
 #include <TMB.hpp>
+
+
+template<class Type>
+bool isNA(Type x){
+  return R_IsNA(asDouble(x));
+}
+
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
@@ -51,34 +58,45 @@ Type objective_function<Type>::operator() ()
 
 
   for(int t=1; t<Tmax; t++){
-     
+
+    
     priormeana(t) = postmeana(t-1);
     priorvara(t) = postvara(t-1) + sigw*sigw;
+
+    if(isNA(x(t))){
+      postmeana(t) = priormeana(t);
+      postvara(t) = priorvara(t);
+    }
+     
     
     //Step 2: Generate predicted value for y(t) given y(t-1) and error
-    yhat(t) = priormeana(t) + b * x(t);
-    v(t) = y(t) - yhat(t);
-    f(t) = priorvara(t) + sige*sige;
-    
-    // Step 3: Generate posterior distribution for intercept (a):
-    postmeana(t) = priormeana(t) + (priorvara(t) * (v(t)/f(t)));
-    postvara(t) = priorvara(t) - (priorvara(t)*priorvara(t)/f(t));
-    filtery(t) = postmeana(t) + b * x(t);
-    ans += (log(f(t)) + (v(t)*v(t)/f(t)))/Type(2.);
+    if(!isNA(x(t))){
+      yhat(t) = priormeana(t) + b * x(t);
+      v(t) = y(t) - yhat(t);
+      f(t) = priorvara(t) + sige*sige;
+      
+      // Step 3: Generate posterior distribution for intercept (a):
+      postmeana(t) = priormeana(t) + (priorvara(t) * (v(t)/f(t)));
+      postvara(t) = priorvara(t) - (priorvara(t)*priorvara(t)/f(t));
+      filtery(t) = postmeana(t) + b * x(t);
+      ans += (log(f(t)) + (v(t)*v(t)/f(t)))/Type(2.);
+    }
 
   }
-
+  //End loop over time
 
 
   //smoothing part
-
+  // Step 6: Smoothing of kalman filter estimates for time-varying intercept
+  // Start loop over time (NB: Calculations start with last values first)
   
   smoothemeana(Tmax-1) = postmeana(Tmax-1);
   smoothevara(Tmax-1) = postvara(Tmax-1);
   smoothey(Tmax-1) = smoothemeana(Tmax-1) + b * x(Tmax-1);
+  pstar(Tmax-1) = -Type(99);
   
 
-  for(int i=Tmax-2; i>=0; --i){
+  for(int i=Tmax-2; i>=0; i--){
       
       pstar(i) = postvara(i)/priorvara(i + 1);
       smoothemeana(i) = postmeana(i) + pstar(i) * (smoothemeana(i + 1) - priormeana(i + 1));
@@ -99,13 +117,13 @@ Type objective_function<Type>::operator() ()
    REPORT(filtery)
    REPORT(pstar)
    ADREPORT(smoothemeana)
-   REPORT(smoothevara)
+   ADREPORT(smoothevara)
    REPORT(smoothey)
    REPORT(initmeana)
    REPORT(initvara)
    REPORT(b)
-   REPORT(sige)
-   REPORT(sigw)
+   ADREPORT(sige)
+   ADREPORT(sigw)
     return ans;
 
 }
