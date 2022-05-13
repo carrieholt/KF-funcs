@@ -10,7 +10,7 @@ library(ggplot2)
 
 #============================================
 devtools::document()
-
+devtools::load_all()
 #update online documentationH
 #pkgdown::build_site()
 
@@ -26,8 +26,8 @@ devtools::unload("KFfuncs")
 path.install <-  "C:/Users/worc/Documents/KFfuncs_0.0.0.1000.tar.gz"
 
 system(paste0("Rcmd.exe INSTALL --preclean --no-multiarch --with-keep.source ", path.install))
-
 library(KFfuncs)
+
 
 
 
@@ -64,18 +64,13 @@ mydata<-list(S=Stellako$ETS,
   R=Stellako$Rec
   )
 
-
 resu <- rbTMB(data=mydata, priorratiovar=c(1,1), silent = FALSE, control = TMBcontrol())
 
-names(resu)
 resu$sd_report
 resu$tmb_obj$report()
 sdrep<-summary(sdreport(resu$tmb_obj))
 lowatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]-1.96*sdrep[which(rownames(sdrep)=="alpha"),2]
 higatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]+1.96*sdrep[which(rownames(sdrep)=="alpha"),2]
-
-
-
 
 rekf <- kfTMB(data=mydata, silent = FALSE, control = TMBcontrol())
 names(rekf)
@@ -84,10 +79,11 @@ cbind(sqrt(rekf$tmb_obj$report()$smoothevara),
   kfrep[which(rownames(kfrep)=="smoothemeana"),2])
 
 kfrep <- summary(sdreport(rekf$tmb_obj))
-kfrep[which(rownames(kfrep)=="smoothemeana"),1],
+kfrep[which(rownames(kfrep)=="smoothemeana"),1]
+kfrep[which(rownames(kfrep)=="smoothevara"),1]
 
-lowkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]-1.96*sqrt(rekf$tmb_obj$report()$smoothevara)
-higkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*sqrt(rekf$tmb_obj$report()$smoothevara)
+lowkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]-1.96*sqrt(kfrep[which(rownames(kfrep)=="smoothevara"),1])
+higkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*sqrt(kfrep[which(rownames(kfrep)=="smoothevara"),1])
 
 lowkftmbapprox<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]-1.96*kfrep[which(rownames(kfrep)=="smoothemeana"),2]
 higkftmbapprox<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*kfrep[which(rownames(kfrep)=="smoothemeana"),2]
@@ -133,14 +129,35 @@ pp
 
 
 
-cbind(
-kfrep[which(rownames(kfrep)=="smoothemeana"),1],
-sdrep[which(rownames(sdrep)=="alpha"),1],
-Stel$smoothe.mean.a)
-
-rekf$sd_report
 
 
 
+library(TMB)
+library(KFfuncs)
+compile("../src/Rickerkf.cpp", '-O1 -g', DLLFLAGS='', framework = 'TMBad')
+dyn.load(dynlib("../src/Rickerkf"))
 
 
+mydata<-list(S=Stellako$ETS,
+  R=Stellako$Rec
+  )
+tmb_data <- list(
+    x = mydata$S,
+    y = log(mydata$R/mydata$S)
+  )
+
+ tmb_params <- list(
+    initmeana   = lm(y~x, data=tmb_data)$coefficients[[1]],
+    #loginitvara = log(1),
+    b           = lm(y~x, data=tmb_data)$coefficients[[2]],
+    logsige     = log(1),
+    logsigw     = log(1)
+  )
+
+obj <- MakeADFun(tmb_data,tmb_params,DLL="Rickerkf")#,lower = -Inf, upper = Inf)
+newtonOption(obj, smartsearch=FALSE)
+
+  opt <- nlminb(obj$par,obj$fn,obj$gr)
+  obj$rep()
+kfrep <- summary(sdreport(obj))
+   

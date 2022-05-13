@@ -21,20 +21,21 @@ Type objective_function<Type>::operator() ()
   //alpha       -> Time-varying alpha
 
   PARAMETER(initmeana);
-  PARAMETER(loginitvara);
+  //PARAMETER(loginitvara);
   PARAMETER(b);
   PARAMETER(logsige);
   PARAMETER(logsigw);
 
   Type sige = exp(logsige);
   Type sigw = exp(logsigw);
-  Type initvara = exp(loginitvara);
+  //Type initvara = exp(loginitvara);
+  Type initvara = Type(1.0);
 
   int Tmax = x.size();
 
   vector<Type> priormeana(Tmax),  priorvara(Tmax), yhat(Tmax),
   f(Tmax), v(Tmax), postmeana(Tmax), postvara(Tmax), filtery(Tmax),
-   smoothemeana(Tmax), smoothevara(Tmax), smoothey(Tmax);
+   smoothemeana(Tmax), smoothevara(Tmax), smoothey(Tmax), dummy(Tmax);
 
 
   vector<Type> pstar(Tmax-1);
@@ -93,10 +94,9 @@ Type objective_function<Type>::operator() ()
   smoothemeana(Tmax-1) = postmeana(Tmax-1);
   smoothevara(Tmax-1) = postvara(Tmax-1);
   smoothey(Tmax-1) = smoothemeana(Tmax-1) + b * x(Tmax-1);
-  pstar(Tmax-1) = -Type(99);
-  
+  pstar.setZero();
 
-  for(int i=Tmax-2; i>=0; i--){
+  for(int i=Tmax-2; i>=0; --i){
       
       pstar(i) = postvara(i)/priorvara(i + 1);
       smoothemeana(i) = postmeana(i) + pstar(i) * (smoothemeana(i + 1) - priormeana(i + 1));
