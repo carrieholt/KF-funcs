@@ -20,8 +20,8 @@ devtools::load_all()
 devtools::build()
 
 
-detach("KFfuncs", unload=TRUE)
-devtools::unload("KFfuncs")
+#detach("KFfuncs", unload=TRUE)
+#devtools::unload("KFfuncs")
 
 #path.install <-  "C:/Users/worc/Documents/KFfuncs_0.0.0.1000.tar.gz"
 #path.install <- "/Users/catarinawor/Documents/timevar/KFfuncs_0.0.0.1000.tar.gz"
