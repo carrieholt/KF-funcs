@@ -27,7 +27,6 @@ kfTMB <- function(data,  silent = FALSE, control = TMBcontrol()) {
 
   tmb_params <- list(
     initmeana   = lm(y~x, data=tmb_data)$coefficients[[1]],
-    loginitvara = log(1),
     b           = lm(y~x, data=tmb_data)$coefficients[[2]],
     logsige     = log(1),
     logsigw     = log(1)
@@ -67,6 +66,98 @@ kfTMB <- function(data,  silent = FALSE, control = TMBcontrol()) {
     class      = "kfTMB")
 
 }
+
+
+
+
+#' Sample mcmc from kalman filter model uses tmbstan this function does not work well
+#'
+#' @param tmb_obj object from the output of the kfTMB function
+#' @param iter number of iteration for mcmc sampling
+#' @param chains number of mcmc chains
+#' @param init Initial values for the sampler. Behaves like tmbstan
+#' @param lower Vector of lower parameter bounds. Behaves like tmbstan
+#' @param upper Vector of upper parameter bounds. Behaves like tmbstan
+#' @param control Behaves like rstan
+#' @param warmup Behaves like rstan
+#' @param thin Behaves like rstan
+#' 
+#' @param silent Silent or optimization details?
+#' 
+#' @importFrom tmbstan tmbstan
+#' @export
+kfTMBmcmc <- function(data,  silent = FALSE, control = TMBcontrol(),
+  iter=2000, chains=4, init="random", 
+  lower=c(-Inf,-Inf,-Inf,-Inf), 
+  upper=c(Inf,Inf,Inf,Inf),
+  controlstan=list(adapt_delta = 0.95,max_treedepth = 15),
+  warmup=500,
+  thin = 1) {
+  
+
+  tmb_data <- list(
+    x = data$S,
+    y = log(data$R/data$S)
+  )
+
+
+  tmb_params <- list(
+    initmeana   = lm(y~x, data=tmb_data)$coefficients[[1]],
+    b           = lm(y~x, data=tmb_data)$coefficients[[2]],
+    logsige     = log(1),
+    logsigw     = log(1)
+  )
+
+  #to be implemented
+  tmb_map <- list()
+  tmb_random <- NULL
+
+  
+   
+
+  #===================================
+  # TMB fit
+  #===================================
+
+  tmb_obj <- TMB::MakeADFun(
+    data = tmb_data, parameters = tmb_params, map = tmb_map,
+    random = tmb_random, DLL = "Rickerkf", silent = silent)
+  
+  tmb_opt <- stats::nlminb(
+    start = tmb_obj$par, objective = tmb_obj$fn, gradient = tmb_obj$gr,
+    control = control)
+  
+
+  #===================================
+  #prepare TMB input and options
+  #===================================
+   fitmcmc <- tmbstan(tmb_obj , chains = chains, iter = iter,
+                init=init,
+                lower=lower,
+                upper=upper,
+                control = controlstan, warmup = warmup,  thin = thin)
+    
+  mc <- extract(fitmcmc, pars=names(tmb_obj$par),
+                inc_warmup=TRUE, permuted=FALSE)
+  fit_summary <- summary(fitmcmc)   
+  
+
+  #===================================
+  # TMB fit
+  #===================================
+
+  structure(list(
+    fitmcmc    = fitmcmc,
+    mcpars     = mc,
+    fit_summary = fit_summary
+    ))
+
+}
+
+
+
+
+
 
 #' Optimization control options stolen from sdmTMB
 #'

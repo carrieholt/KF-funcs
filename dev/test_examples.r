@@ -17,7 +17,7 @@ devtools::load_all()
 #equivalent to ctrl + b in Rstudio 
 #devtools::build(binary= TRUE)
 
-devtools::build()
+#devtools::build()
 
 
 detach("KFfuncs", unload=TRUE)
@@ -53,9 +53,23 @@ initial$EstB <- TRUE
 
 Stel<-kf.rw(initial=initial,x=x,y=y)
 names(Stel)
+Stel$smoothe.y
 
 
+steltmbdat<-data.frame(S=Stellako$ETS,
+                  R=Stellako$Rec)
 
+Steltmb <- kfTMB(steltmbdat)
+
+
+Steltmb$tmb_obj$report()
+summary(sdreport(Steltmb$tmb_obj))
+
+
+Steltmbmc <- kfTMBmcmc(data=steltmbdat,iter=3000 )
+names(Steltmbmc)
+
+summary(Steltmbmc$fitmcmc)
 
 #use/test package
 

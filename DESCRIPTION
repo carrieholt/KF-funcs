@@ -23,7 +23,7 @@ ByteCompile: true
 Roxygen: list(markdown = TRUE) 
 Depends: 
     R (>= 3.2.0),
-    TMB, RcppEigen
+    TMB, RcppEigen, tmbstan
 Suggests: 
     knitr,
     rmarkdown,
