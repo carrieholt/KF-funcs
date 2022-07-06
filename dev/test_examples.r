@@ -11,7 +11,7 @@ library(ggplot2)
 #============================================
 devtools::document()
 devtools::load_all()
-#update online documentationH
+#update online documentation
 #pkgdown::build_site()
 
 #equivalent to ctrl + b in Rstudio 
@@ -20,12 +20,15 @@ devtools::load_all()
 #devtools::build()
 
 
-detach("KFfuncs", unload=TRUE)
-devtools::unload("KFfuncs")
+#detach("KFfuncs", unload=TRUE)
+#devtools::unload("KFfuncs")
 
-path.install <-  "C:/Users/worc/Documents/KFfuncs_0.0.0.1000.tar.gz"
+#path.install <-  "C:/Users/worc/Documents/KFfuncs_0.0.0.1000.tar.gz"
+#path.install <- "/Users/catarinawor/Documents/timevar/KFfuncs_0.0.0.1000.tar.gz"
 
 system(paste0("Rcmd.exe INSTALL --preclean --no-multiarch --with-keep.source ", path.install))
+
+
 library(KFfuncs)
 
 
