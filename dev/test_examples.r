@@ -26,10 +26,11 @@ devtools::load_all()
 #path.install <-  "C:/Users/worc/Documents/KFfuncs_0.0.0.1000.tar.gz"
 #path.install <- "/Users/catarinawor/Documents/timevar/KFfuncs_0.0.0.1000.tar.gz"
 
-system(paste0("Rcmd.exe INSTALL --preclean --no-multiarch --with-keep.source ", path.install))
+#system(paste0("Rcmd.exe INSTALL --preclean --no-multiarch --with-keep.source ", path.install))
 
-
-library(KFfuncs)
+#if you want to install from git
+#remotes::install_git("https://github.com/carrieholt/KF-funcs.git")
+#library(KFfuncs)
 
 
 
@@ -55,8 +56,6 @@ initial$Ts <- 0
 initial$EstB <- TRUE
 
 Stel<-kf.rw(initial=initial,x=x,y=y)
-names(Stel)
-Stel$smoothe.y
 
 
 steltmbdat<-data.frame(S=Stellako$ETS,
@@ -70,7 +69,6 @@ summary(sdreport(Steltmb$tmb_obj))
 
 
 Steltmbmc <- kfTMBmcmc(data=steltmbdat,iter=3000 )
-names(Steltmbmc)
 
 summary(Steltmbmc$fitmcmc)
 
@@ -85,6 +83,9 @@ resu <- rbTMB(data=mydata, priorratiovar=c(1,1), silent = FALSE, control = TMBco
 
 resu$sd_report
 resu$tmb_obj$report()
+parrb <- rekf$tmb_obj$par
+r <- rekf$tmb_obj$report(parrb)
+
 sdrep<-summary(sdreport(resu$tmb_obj))
 lowatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]-1.96*sdrep[which(rownames(sdrep)=="alpha"),2]
 higatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]+1.96*sdrep[which(rownames(sdrep)=="alpha"),2]
@@ -104,7 +105,6 @@ higkftmb<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*sqrt(kfrep[which(
 
 lowkftmbapprox<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]-1.96*kfrep[which(rownames(kfrep)=="smoothemeana"),2]
 higkftmbapprox<-kfrep[which(rownames(kfrep)=="smoothemeana"),1]+1.96*kfrep[which(rownames(kfrep)=="smoothemeana"),2]
-
 
 
 mdf<-data.frame(est_a=c(Stel$smoothe.mean.a,
@@ -149,12 +149,6 @@ pp
 
 
 
-library(TMB)
-library(KFfuncs)
-compile("../src/Rickerkf.cpp", '-O1 -g', DLLFLAGS='', framework = 'TMBad')
-dyn.load(dynlib("../src/Rickerkf"))
-
-
 mydata<-list(S=Stellako$ETS,
   R=Stellako$Rec
   )
@@ -171,10 +165,24 @@ tmb_data <- list(
     logsigw     = log(1)
   )
 
-obj <- MakeADFun(tmb_data,tmb_params,DLL="Rickerkf")#,lower = -Inf, upper = Inf)
-newtonOption(obj, smartsearch=FALSE)
-
-  opt <- nlminb(obj$par,obj$fn,obj$gr)
-  obj$rep()
-kfrep <- summary(sdreport(obj))
    
+
+
+#=================================================
+#compare kf with full and others LL
+
+
+
+
+steltmbdat<-data.frame(S=Stellako$ETS,
+                  R=Stellako$Rec)
+
+Steltmb <- kfTMB(steltmbdat)
+
+summary(Steltmb$sd_report)
+
+SteltmbfLL <- kfTMB(steltmbdat, fullLL=T)
+
+summary(SteltmbfLL$sd_report)-summary(Steltmb$sd_report)
+
+

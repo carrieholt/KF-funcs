@@ -10,11 +10,13 @@
 #'
 #' @param data A list or data frame containing Spawners (S) and Recruits (R) time series. No NA allowed at this point in time
 #' 
-#' @param silent Silent or optimization details?
+#' @param silent Logical Silent or optimization details? default is FALSE
+#' @param control output from TMBcontrol() function, to be passed to nlminb()
+#' @param fullLL Logical, indicate if the version with full LL should be used, default = False 
 #' 
 #' 
 #' @export
-kfTMB <- function(data,  silent = FALSE, control = TMBcontrol()) {
+kfTMB <- function(data,  silent = FALSE, control = TMBcontrol(), fullLL=FALSE) {
 
   #===================================
   #prepare TMB input and options
@@ -40,9 +42,15 @@ kfTMB <- function(data,  silent = FALSE, control = TMBcontrol()) {
   # TMB fit
   #===================================
 
-  tmb_obj <- TMB::MakeADFun(
-    data = tmb_data, parameters = tmb_params, map = tmb_map,
-    random = tmb_random, DLL = "Rickerkf", silent = silent)
+  if(fullLL){
+    tmb_obj <- TMB::MakeADFun(
+      data = tmb_data, parameters = tmb_params, map = tmb_map,
+      random = tmb_random, DLL = "Rickerkf_fullLL", silent = silent)
+  }else{
+    tmb_obj <- TMB::MakeADFun(
+      data = tmb_data, parameters = tmb_params, map = tmb_map,
+      random = tmb_random, DLL = "Rickerkf", silent = silent)
+  }
   
   tmb_opt <- stats::nlminb(
     start = tmb_obj$par, objective = tmb_obj$fn, gradient = tmb_obj$gr,

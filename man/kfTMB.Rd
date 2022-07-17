@@ -4,12 +4,16 @@
 \alias{kfTMB}
 \title{Fit the analytical solution for the Kalman Filter Ricker stock recruitment model}
 \usage{
-kfTMB(data, silent = FALSE, control = TMBcontrol())
+kfTMB(data, silent = FALSE, control = TMBcontrol(), fullLL = FALSE)
 }
 \arguments{
 \item{data}{A list or data frame containing Spawners (S) and Recruits (R) time series. No NA allowed at this point in time}
 
-\item{silent}{Silent or optimization details?}
+\item{silent}{Logical Silent or optimization details? default is FALSE}
+
+\item{control}{output from TMBcontrol() function, to be passed to nlminb()}
+
+\item{fullLL}{Logical, indicate if the version with full LL should be used, default = False}
 }
 \description{
 Fit the analytical solution for the Kalman Filter Ricker stock recruitment model
