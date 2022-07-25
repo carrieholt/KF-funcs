@@ -92,6 +92,15 @@ higatmb<-sdrep[which(rownames(sdrep)=="alpha"),1]+1.96*sdrep[which(rownames(sdre
 rekf <- kfTMB(data=mydata, silent = FALSE, control = TMBcontrol())
 names(rekf)
 
+# # Carrie's addition (instead of the subsequent cbind, run after kfrep is generated)
+# e <- as.list(rekf$sd_report, "Estimate", report = TRUE) # default is report = FALSE
+# se <- as.list(rekf$sd_report, "Std. Error", report = TRUE)
+# e$smoothevara
+# se$smoothevara
+# cbind(sqrt(e$smoothevara),
+#       kfrep[which(rownames(kfrep)=="smoothemeana"),2])
+
+
 cbind(sqrt(rekf$tmb_obj$report()$smoothevara),
   kfrep[which(rownames(kfrep)=="smoothemeana"),2])
 
