@@ -17,8 +17,8 @@ Type objective_function<Type>::operator() ()
   //logbeta     -> log of beta from ricker curve
   //alphao      -> initial alpha value
   //rho         -> Proportion of total variance associated with obs error.
-  //varphi      -> Total precision
-  //alpha       -> Time-varying alpha
+  //logsige     -> Natural log of the standard deviation of observation error
+  //logsigw     -> Natural log of the standard deviation of system error
 
   PARAMETER(initmeana);
   //PARAMETER(loginitvara);
